@@ -1,16 +1,43 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native';
 
 export default function App() {
+  let [isLoading, setIsLoading] = useState(true);
+  let [error, setError] = useState();
+  let [response, setResponse] = useState();
 
-  const getPlants = () => {
-    return <ActivityIndicator size='large' />;
+  useEffect(() => {
+    fetch("https://dog.ceo/api/breeds/image/random")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setIsLoading(false);
+          setResponse(result);
+        },
+        (error) => {
+          setIsLoading(false);
+          setError(error);
+        }
+      )
+  }, []);
+
+  const getContent = () => {
+    if (isLoading) {
+      return <ActivityIndicator size='large' />;
+    }
+
+    if (error) {
+      return<Text>{error}</Text>
+    }
+
+    console.log(response)
+    return <Image source={{uri: 'https://dog.ceo/api/breeds/image/random'}}/>;
   };
 
   return (
     <View style={styles.container}>
-      {getPlants()}
+       {getContent()}
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
     </View>
